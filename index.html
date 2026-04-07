@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Conferência PIX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-white shadow-xl rounded-3xl max-w-md w-full overflow-hidden border border-gray-200">
+        <div class="bg-[#32bcad] p-6 text-center">
+            <img src="https://logodownload.org/wp-content/uploads/2020/02/pix-bc-logo.png" class="h-7 mx-auto brightness-0 invert" alt="Logo PIX">
+            <p class="text-white text-xs font-bold mt-2 tracking-widest uppercase">Sistema de Lançamentos</p>
+        </div>
+        <div class="p-8">
+            <h2 class="text-gray-700 font-bold text-lg mb-6">Conferência de Recebimento</h2>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Valor do Lançamento</label>
+                    <input type="text" id="valor" oninput="mascaraMoeda(this)" placeholder="R$ 0,00" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#32bcad] outline-none transition-all font-semibold text-gray-700">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Tipo de Chave PIX</label>
+                    <select id="tipoChave" onchange="limparEAjustar()" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl outline-none focus:ring-2 focus:ring-[#32bcad] text-gray-700 font-medium">
+                        <option value="cpf">CPF</option>
+                        <option value="tel">Telefone (Celular)</option>
+                        <option value="email">E-mail</option>
+                        <option value="ale">Chave Aleatória</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1 ml-1">Chave Destinatária</label>
+                    <input type="text" id="chaveInput" oninput="aplicarMascara(this)" placeholder="000.000.000-00" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#32bcad] outline-none transition-all text-gray-700">
+                </div>
+                <button onclick="iniciarProcessamento()" id="btnProsseguir" class="w-full bg-[#32bcad] hover:bg-[#2aa396] text-white font-extrabold py-5 rounded-2xl shadow-lg transition-all flex items-center justify-center gap-3 mt-4">
+                    PROSSEGUIR
+                </button>
+            </div>
+            <p class="text-[10px] text-gray-400 text-center mt-8 uppercase tracking-tighter">Powered by Banco Central do Brasil • 2026</p>
+        </div>
+    </div>
+    <script>
+        function mascaraMoeda(i) {
+            let v = i.value.replace(/\D/g,'');
+            v = (v/100).toFixed(2) + '';
+            v = v.replace(".", ",");
+            v = v.replace(/(\d)(\d{3})(\d{3}),/g, "$1.$2.$3,");
+            v = v.replace(/(\d)(\d{3}),/g, "$1.$2,");
+            i.value = v !== '0,00' ? 'R$ ' + v : '';
+        }
+        function limparEAjustar() {
+            const input = document.getElementById('chaveInput');
+            const tipo = document.getElementById('tipoChave').value;
+            input.value = "";
+            if(tipo === 'cpf') input.placeholder = "000.000.000-00";
+            else if(tipo === 'tel') input.placeholder = "(00) 00000-0000";
+            else if(tipo === 'email') input.placeholder = "seuemail@exemplo.com";
+            else input.placeholder = "Insira a chave aleatória";
+        }
+        function aplicarMascara(i) {
+            const tipo = document.getElementById('tipoChave').value;
+            let v = i.value.replace(/\D/g, "");
+            if (tipo === 'cpf') {
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d)/, "$1.$2");
+                v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+            } else if (tipo === 'tel') {
+                v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+                v = v.replace(/(\d{5})(\d)/, "$1-$2");
+            }
+            i.value = v;
+        }
+        function iniciarProcessamento() {
+            const btn = document.getElementById('btnProsseguir');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> PROCESSANDO...';
+            setTimeout(() => { window.location.href = "pagina2.html"; }, 2500);
+        }
+    </script>
+</body>
+</html>
